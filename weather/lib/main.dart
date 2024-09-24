@@ -45,6 +45,13 @@ class _WeatherInfoPageState extends State<WeatherInfoPage> {
     return 15 + random.nextInt(16); // Generates a number between 15 and 30
   }
 
+  // Randomly selects a weather condition: sunny, cloudy, or rainy
+  String _getRandomWeatherCondition() {
+    List<String> conditions = ["Sunny", "Cloudy", "Rainy"];
+    Random random = Random();
+    return conditions[random.nextInt(3)];
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
