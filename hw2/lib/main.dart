@@ -31,34 +31,48 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   void onButtonPressed(String value) {
     setState(() {
       if (value == 'C') {
+        // Clear all values
         input = '';
         result = '';
         operator = '';
         operand1 = 0;
         operand2 = 0;
       } else if (value == '+' || value == '-' || value == '*' || value == '/') {
-        operand1 = double.parse(input);
-        operator = value;
-        input = '';
-      } else if (value == '=') {
-        operand2 = double.parse(input);
-        switch (operator) {
-          case '+':
-            result = (operand1 + operand2).toString();
-            break;
-          case '-':
-            result = (operand1 - operand2).toString();
-            break;
-          case '*':
-            result = (operand1 * operand2).toString();
-            break;
-          case '/':
-            result = operand2 != 0 ? (operand1 / operand2).toString() : 'Error';
-            break;
+        // Save the first operand and the operator
+        if (input.isNotEmpty) {
+          operand1 = double.parse(input);
+          operator = value;
+          input = '';
         }
-        input = result;
+      } else if (value == '=') {
+        // Perform the calculation if second operand is valid
+        if (input.isNotEmpty && operator.isNotEmpty) {
+          operand2 = double.parse(input);
+          switch (operator) {
+            case '+':
+              result = (operand1 + operand2).toString();
+              break;
+            case '-':
+              result = (operand1 - operand2).toString();
+              break;
+            case '*':
+              result = (operand1 * operand2).toString();
+              break;
+            case '/':
+              result =
+                  operand2 != 0 ? (operand1 / operand2).toString() : 'Error';
+              break;
+          }
+          input = result;
+        }
       } else {
-        input += value; // Append the number or decimal point
+        // Prevent multiple decimal points in a single number
+        if (value == '.' && input.contains('.')) {
+          // If the input already contains a decimal, do nothing
+          return;
+        }
+        // Append the number or decimal point to the input
+        input += value;
       }
     });
   }
