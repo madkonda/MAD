@@ -51,6 +51,9 @@ class _GameScreenState extends State<GameScreen> {
         if (_cardValues[_selectedIndexes[0]] ==
             _cardValues[_selectedIndexes[1]]) {
           _selectedIndexes.clear();
+          if (_cardFlips.every((flip) => flip == true)) {
+            _showWinDialog();
+          }
         } else {
           Future.delayed(Duration(seconds: 1), () {
             setState(() {
@@ -62,6 +65,30 @@ class _GameScreenState extends State<GameScreen> {
         }
       }
     }
+  }
+
+  void _showWinDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("You Win!"),
+          content: Text("Congratulations, you've matched all the cards."),
+          actions: [
+            TextButton(
+              child: Text("Play Again"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                setState(() {
+                  _cardFlips = List.generate(16, (index) => false);
+                  _selectedIndexes.clear();
+                });
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -79,11 +106,14 @@ class _GameScreenState extends State<GameScreen> {
               onTap: () {
                 _flipCard(index);
               },
-              child: Card(
-                child: Center(
-                  child: Text(
-                    _cardFlips[index] ? _cardValues[index] : 'X',
-                    style: TextStyle(fontSize: 32),
+              child: AnimatedContainer(
+                duration: Duration(milliseconds: 500),
+                child: Card(
+                  child: Center(
+                    child: Text(
+                      _cardFlips[index] ? _cardValues[index] : 'X',
+                      style: TextStyle(fontSize: 32),
+                    ),
                   ),
                 ),
               ),
