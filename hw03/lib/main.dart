@@ -17,28 +17,27 @@ class GameScreen extends StatefulWidget {
   @override
   _GameScreenState createState() => _GameScreenState();
 }
-
 class _GameScreenState extends State<GameScreen> {
   List<bool> _cardFlips = List.generate(16, (index) => false);
-  List<String> _cardValues = [
-    'A',
-    'B',
-    'C',
-    'D',
-    'A',
-    'B',
-    'C',
-    'D',
-    'E',
-    'F',
-    'E',
-    'F',
-    'G',
-    'H',
-    'G',
-    'H'
-  ];
+  List<String> _cardValues = ['A', 'B', 'C', 'D', 'A', 'B', 'C', 'D', 'E', 'F', 'E', 'F', 'G', 'H', 'G', 'H'];
   List<int> _selectedIndexes = [];
+  int _score = 0;
+  int _timer = 0;
+  late Timer _gameTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _startTimer();
+  }
+
+  void _startTimer() {
+    _gameTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        _timer++;
+      });
+    });
+  }
 
   void _flipCard(int index) {
     if (_selectedIndexes.length < 2 && !_cardFlips[index]) {
@@ -48,13 +47,14 @@ class _GameScreenState extends State<GameScreen> {
       });
 
       if (_selectedIndexes.length == 2) {
-        if (_cardValues[_selectedIndexes[0]] ==
-            _cardValues[_selectedIndexes[1]]) {
+        if (_cardValues[_selectedIndexes[0]] == _cardValues[_selectedIndexes[1]]) {
           _selectedIndexes.clear();
+          _score += 10;
           if (_cardFlips.every((flip) => flip == true)) {
             _showWinDialog();
           }
         } else {
+          _score -= 5;
           Future.delayed(Duration(seconds: 1), () {
             setState(() {
               _cardFlips[_selectedIndexes[0]] = false;
@@ -68,59 +68,4 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   void _showWinDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("You Win!"),
-          content: Text("Congratulations, you've matched all the cards."),
-          actions: [
-            TextButton(
-              child: Text("Play Again"),
-              onPressed: () {
-                Navigator.of(context).pop();
-                setState(() {
-                  _cardFlips = List.generate(16, (index) => false);
-                  _selectedIndexes.clear();
-                });
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Card Matching Game')),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: GridView.builder(
-          gridDelegate:
-              SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
-          itemCount: 16,
-          itemBuilder: (context, index) {
-            return GestureDetector(
-              onTap: () {
-                _flipCard(index);
-              },
-              child: AnimatedContainer(
-                duration: Duration(milliseconds: 500),
-                child: Card(
-                  child: Center(
-                    child: Text(
-                      _cardFlips[index] ? _cardValues[index] : 'X',
-                      style: TextStyle(fontSize: 32),
-                    ),
-                  ),
-                ),
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-}
+   
