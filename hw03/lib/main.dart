@@ -19,8 +19,7 @@ class GameScreen extends StatefulWidget {
 }
 
 class _GameScreenState extends State<GameScreen> {
-  List<bool> _cardFlips =
-      List.generate(16, (index) => false); // Card flip state
+  List<bool> _cardFlips = List.generate(16, (index) => false);
   List<String> _cardValues = [
     'A',
     'B',
@@ -39,14 +38,29 @@ class _GameScreenState extends State<GameScreen> {
     'G',
     'H'
   ];
-  List<String> _selectedCards = [];
+  List<int> _selectedIndexes = [];
 
   void _flipCard(int index) {
-    if (_selectedCards.length < 2) {
+    if (_selectedIndexes.length < 2 && !_cardFlips[index]) {
       setState(() {
         _cardFlips[index] = !_cardFlips[index];
-        _selectedCards.add(_cardValues[index]);
+        _selectedIndexes.add(index);
       });
+
+      if (_selectedIndexes.length == 2) {
+        if (_cardValues[_selectedIndexes[0]] ==
+            _cardValues[_selectedIndexes[1]]) {
+          _selectedIndexes.clear();
+        } else {
+          Future.delayed(Duration(seconds: 1), () {
+            setState(() {
+              _cardFlips[_selectedIndexes[0]] = false;
+              _cardFlips[_selectedIndexes[1]] = false;
+              _selectedIndexes.clear();
+            });
+          });
+        }
+      }
     }
   }
 
