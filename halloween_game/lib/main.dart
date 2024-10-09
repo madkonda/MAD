@@ -1,5 +1,5 @@
-// Madhu Sudhan Reddy Konda (002847774)
-// Sri Haneesha Davuluri (002804845)
+// Madhu Sudhan Reddy Konda
+// Sri Haneesha Davuluri
 
 import 'dart:math';
 import 'package:flutter/material.dart';
