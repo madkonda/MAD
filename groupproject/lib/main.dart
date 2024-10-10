@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:animated_text_kit/animated_text_kit.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -23,6 +22,7 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
   String moodText = "Neutral";
   String petMoodImage = 'assets/neutral_dog.png'; // Initial neutral mood image
   Timer? hungerTimer;
+  Timer? winTimer;
 
   @override
   void initState() {
@@ -36,6 +36,7 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
   @override
   void dispose() {
     hungerTimer?.cancel();
+    winTimer?.cancel();
     _petNameController.dispose();
     super.dispose();
   }
@@ -104,6 +105,44 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
       moodText = "Unhappy 😢";
       petMoodImage = 'assets/unhappy_dog.png';
     }
+
+    _checkWinCondition();
+  }
+
+  // Check for win condition (happiness > 80 for 3 minutes)
+  void _checkWinCondition() {
+    if (happinessLevel > 80) {
+      winTimer ??= Timer(Duration(minutes: 3), () {
+        if (happinessLevel > 80) {
+          _showWinDialog();
+        }
+      });
+    } else {
+      winTimer?.cancel();
+      winTimer = null;
+    }
+  }
+
+  // Show win dialog
+  void _showWinDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("You Win!"),
+          content: Text("Your pet stayed happy for 3 minutes!"),
+          actions: [
+            TextButton(
+              child: Text("Play Again"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _resetPetStatus();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   // Check for game over condition
@@ -124,7 +163,7 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
           content: Text("Your pet is too hungry and unhappy!"),
           actions: [
             TextButton(
-              child: Text("OK"),
+              child: Text("Restart"),
               onPressed: () {
                 Navigator.of(context).pop();
                 _resetPetStatus();
@@ -144,19 +183,24 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
       petColor = Colors.yellow;
       moodText = "Neutral";
       petMoodImage = 'assets/neutral_dog.png'; // Reset to neutral dog image
+      hungerTimer?.cancel();
+      hungerTimer = Timer.periodic(Duration(seconds: 30), (timer) {
+        _increaseHungerAutomatically();
+      });
     });
   }
 
   // Function to set a custom name for the pet
-  void _setPetName(String name) {
+  void _setPetName() {
     setState(() {
-      petName = name;
+      petName = _petNameController.text;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.orangeAccent, // Funny background theme
       appBar: AppBar(
         title: AnimatedTextKit(
           animatedTexts: [
@@ -173,6 +217,7 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
           isRepeatingAnimation: true,
           repeatForever: true,
         ),
+        backgroundColor: Colors.purpleAccent, // Adding a vibrant app bar color
       ),
       body: Center(
         child: Column(
@@ -189,41 +234,60 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
             SizedBox(height: 16.0),
             Text(
               'Happiness Level: $happinessLevel',
-              style: TextStyle(fontSize: 20.0),
+              style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 16.0),
             Text(
               'Hunger Level: $hungerLevel',
-              style: TextStyle(fontSize: 20.0),
+              style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 16.0),
             Text(
               'Mood: $moodText',
-              style: TextStyle(fontSize: 20.0),
+              style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 32.0),
             ElevatedButton(
               onPressed: _playWithPet,
               child: Text('Play with Your Pet'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blueAccent,
+              ),
             ),
             SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: _feedPet,
               child: Text('Feed Your Pet'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.greenAccent,
+              ),
             ),
             SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: _resetPetStatus,
               child: Text('Reset Pet Status'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
+                backgroundColor: Colors.redAccent,
               ),
             ),
             SizedBox(height: 16.0),
-            TextField(
-              controller: _petNameController,
-              decoration: InputDecoration(labelText: "Enter Pet Name"),
-              onChanged: _setPetName, // Update pet name instantly as typed
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.0),
+              child: TextField(
+                controller: _petNameController,
+                decoration: InputDecoration(
+                  labelText: "Enter Pet Name",
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ),
+            SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: _setPetName,
+              child: Text('Set Pet Name'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.pinkAccent,
+              ),
             ),
           ],
         ),
