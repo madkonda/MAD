@@ -1,4 +1,4 @@
-# js
+# FinIQ
 
 A new Flutter project.
 

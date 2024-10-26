@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/animation.dart';
+import 'package:js/helpers/database_helper.dart';
 import 'dashboard.dart'; // Assuming Dashboard class is defined in dashboard.dart
 
 void main() {
@@ -10,6 +10,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'User Signup Demo',
+      theme: ThemeData(primarySwatch: Colors.blue),
       home: LoginPage(),
     );
   }
@@ -22,8 +24,9 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage>
     with SingleTickerProviderStateMixin {
-  TextEditingController _usernameController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final DatabaseHelper _databaseHelper = DatabaseHelper.instance;
 
   late AnimationController _controller;
   late Animation<Offset> _slideAnimation;
@@ -63,18 +66,20 @@ class _LoginPageState extends State<LoginPage>
     super.dispose();
   }
 
-  void _login() {
+  Future<void> _login() async {
     String username = _usernameController.text.trim();
     String password = _passwordController.text.trim();
 
-    if (username == 'madhu' && password == 'konda') {
+    bool isAuthenticated = await _databaseHelper.verifyUser(username, password);
+    if (isAuthenticated) {
       setState(() {
         _isLoggedIn = true;
       });
 
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => Dashboard()),
+        MaterialPageRoute(
+            builder: (context) => Dashboard()), // Navigate to dashboard
       );
     } else {
       showDialog(
@@ -100,10 +105,10 @@ class _LoginPageState extends State<LoginPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // WhatsApp style white background
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('Login'),
-        backgroundColor: Color(0xFF075E54), // WhatsApp green color
+        backgroundColor: Color(0xFF075E54),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -112,9 +117,9 @@ class _LoginPageState extends State<LoginPage>
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              SizedBox(height: 50.0), // Add space at the top
+              SizedBox(height: 50.0),
 
-              // WhatsApp styled logo/text
+              // App title
               Center(
                 child: Text(
                   'FinIQ',
@@ -186,13 +191,11 @@ class _LoginPageState extends State<LoginPage>
                   opacity: _fadeAnimation,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          Color(0xFF25D366), // WhatsApp green button color
+                      backgroundColor: Color(0xFF25D366),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
-                      padding:
-                          EdgeInsets.symmetric(vertical: 16.0), // Larger button
+                      padding: EdgeInsets.symmetric(vertical: 16.0),
                     ),
                     onPressed: _login,
                     child: Text(
@@ -209,24 +212,15 @@ class _LoginPageState extends State<LoginPage>
 
               SizedBox(height: 20.0),
 
-              // Optional: Register or Forgot Password links
+              // Register link
               FadeTransition(
                 opacity: _fadeAnimation,
                 child: TextButton(
                   onPressed: () {
-                    // Add forgot password logic
-                  },
-                  child: Text(
-                    'Forgot Password?',
-                    style: TextStyle(color: Color(0xFF075E54)),
-                  ),
-                ),
-              ),
-              FadeTransition(
-                opacity: _fadeAnimation,
-                child: TextButton(
-                  onPressed: () {
-                    // Add registration logic
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SignupScreen()),
+                    );
                   },
                   child: Text(
                     'New to App? Register now',
@@ -236,6 +230,68 @@ class _LoginPageState extends State<LoginPage>
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class SignupScreen extends StatefulWidget {
+  @override
+  _SignupScreenState createState() => _SignupScreenState();
+}
+
+class _SignupScreenState extends State<SignupScreen> {
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final DatabaseHelper _databaseHelper = DatabaseHelper.instance;
+
+  Future<void> _registerUser() async {
+    String username = _usernameController.text;
+    String password = _passwordController.text;
+
+    if (username.isNotEmpty && password.isNotEmpty) {
+      try {
+        await _databaseHelper.registerUser(username, password);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Registration successful!')),
+        );
+        Navigator.pop(context); // Return to login page
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Username already exists.')),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please fill all fields.')),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Register')),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: _usernameController,
+              decoration: InputDecoration(labelText: 'Username'),
+            ),
+            TextField(
+              controller: _passwordController,
+              decoration: InputDecoration(labelText: 'Password'),
+              obscureText: true,
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _registerUser,
+              child: Text('Register'),
+            ),
+          ],
         ),
       ),
     );
