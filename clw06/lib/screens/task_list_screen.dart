@@ -48,10 +48,14 @@ class _TaskListScreenState extends State<TaskListScreen> {
                 var tasks = snapshot.data ?? [];
                 tasks = _applyFiltersAndSorting(tasks);
 
-                // Show a popup if there are no tasks for the current user
+                // Determine the type of popup based on the tasks and filter state
                 if (tasks.isEmpty) {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
-                    _showNoTasksDialog();
+                    if (showCompletedOnly) {
+                      _showNoCompletedTasksDialog(); // Show dialog if filtering by completed and none found
+                    } else {
+                      _showNoTasksDialog(); // Show initial dialog if no tasks exist at all
+                    }
                   });
                   return Center(child: Text('No tasks available'));
                 }
@@ -79,7 +83,25 @@ class _TaskListScreenState extends State<TaskListScreen> {
       builder: (ctx) => AlertDialog(
         title: Text("Welcome!"),
         content: Text(
-            "It looks like you don't have any tasks yet. Add your first task to get started!"),
+            "It looks like you don't have any tasks yet. Add task to get started!"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text('Okay'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Method to show the "No Completed Tasks" dialog
+  void _showNoCompletedTasksDialog() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text("No Completed Tasks"),
+        content: Text(
+            "You currently have no completed tasks. Complete some tasks to see them here!"),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
@@ -152,8 +174,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
                   name: nameController.text,
                   priority: priority,
                   dueDate: dueDate,
-                  userId: FirebaseAuth
-                      .instance.currentUser!.uid, // Assign userId to the task
+                  userId: FirebaseAuth.instance.currentUser!.uid,
                 );
                 _firebaseService.addTask(task);
                 Navigator.of(ctx).pop();
