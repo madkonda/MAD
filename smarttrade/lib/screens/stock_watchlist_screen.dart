@@ -94,6 +94,7 @@ class _StockWatchlistScreenState extends State<StockWatchlistScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Stock Watchlist'),
+        backgroundColor: Colors.teal[800],
         actions: [
           IconButton(
             icon: Icon(Icons.refresh),
@@ -101,8 +102,9 @@ class _StockWatchlistScreenState extends State<StockWatchlistScreen> {
           ),
         ],
       ),
+      backgroundColor: Colors.teal[50],
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator(color: Colors.teal[800]))
           : RefreshIndicator(
               onRefresh: _loadWatchlistData,
               child: ListView.builder(
@@ -115,7 +117,8 @@ class _StockWatchlistScreenState extends State<StockWatchlistScreen> {
                         context: context,
                         builder: (context) => AlertDialog(
                           title: Text('Remove Stock'),
-                          content: Text('Remove ${stock.symbol} from watchlist?'),
+                          content:
+                              Text('Remove ${stock.symbol} from watchlist?'),
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(context),
@@ -129,7 +132,8 @@ class _StockWatchlistScreenState extends State<StockWatchlistScreen> {
                                 });
                                 Navigator.pop(context);
                               },
-                              child: Text('Remove', style: TextStyle(color: Colors.red)),
+                              child: Text('Remove',
+                                  style: TextStyle(color: Colors.red)),
                             ),
                           ],
                         ),

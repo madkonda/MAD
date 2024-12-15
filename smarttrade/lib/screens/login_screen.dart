@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/firebase_auth_service.dart';
-import 'home_screen.dart'; // Navigate to the Home Screen after login
-import 'register_screen.dart'; // Import the new register screen
+import 'home_screen.dart';
+import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -17,7 +17,11 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Login')),
+      appBar: AppBar(
+        title: Text('Login'),
+        backgroundColor: Colors.teal[800],
+      ),
+      backgroundColor: Colors.teal[50],
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -34,8 +38,12 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               SizedBox(height: 20),
               Text(
-                'StockWatch',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                'SmartTrade',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.teal[900],
+                ),
               ),
               SizedBox(height: 30),
               // Email Input
@@ -43,8 +51,17 @@ class _LoginScreenState extends State<LoginScreen> {
                 controller: emailController,
                 decoration: InputDecoration(
                   labelText: 'Email',
+                  labelStyle: TextStyle(color: Colors.teal[700]),
                   border: OutlineInputBorder(),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.teal[800]!),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.teal[700]!),
+                  ),
                 ),
+                style: TextStyle(
+                    color: Colors.black), // Input text color set to black
               ),
               SizedBox(height: 20),
               // Password Input
@@ -52,9 +69,18 @@ class _LoginScreenState extends State<LoginScreen> {
                 controller: passwordController,
                 decoration: InputDecoration(
                   labelText: 'Password',
+                  labelStyle: TextStyle(color: Colors.teal[700]),
                   border: OutlineInputBorder(),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.teal[800]!),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.teal[700]!),
+                  ),
                 ),
                 obscureText: true,
+                style: TextStyle(
+                    color: Colors.black), // Input text color set to black
               ),
               SizedBox(height: 20),
               // Login Button
@@ -67,13 +93,17 @@ class _LoginScreenState extends State<LoginScreen> {
                     : Text('Log In'),
                 style: ElevatedButton.styleFrom(
                   minimumSize: Size(double.infinity, 50),
+                  backgroundColor: Colors.teal[700],
                 ),
               ),
               SizedBox(height: 10),
               // Sign Up Option
               TextButton(
                 onPressed: _handleSignUp,
-                child: Text('Don\'t have an account? Sign Up'),
+                child: Text(
+                  'Don\'t have an account? Sign Up',
+                  style: TextStyle(color: Colors.teal[600]),
+                ),
               ),
             ],
           ),
@@ -90,21 +120,27 @@ class _LoginScreenState extends State<LoginScreen> {
 
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
-    final user = await _authService.logIn(email, password);
 
-    setState(() {
-      _isLoading = false;
-    });
+    try {
+      final user = await _authService.logIn(email, password);
 
-    if (user != null) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomeScreen()),
-      );
-    } else {
+      if (user != null) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomeScreen()),
+        );
+      }
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Login failed. Please check your credentials.')),
+        SnackBar(
+          content: Text('Login failed. Please try again.'),
+          backgroundColor: Colors.red,
+        ),
       );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 

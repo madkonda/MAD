@@ -2,103 +2,75 @@ import 'package:flutter/material.dart';
 import 'stock_watchlist_screen.dart';
 import 'stock_data_screen.dart';
 import 'financial_news_screen.dart';
-import '../services/firebase_auth_service.dart'; // Import FirebaseAuthService
-import 'login_screen.dart'; // Import LoginScreen for redirection after logout
+import '../services/firebase_auth_service.dart';
+import 'login_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   final FirebaseAuthService _authService = FirebaseAuthService();
+  int _currentIndex = 0;
+
+  final List<Widget> _screens = [
+    StockWatchlistScreen(),
+    StockDataScreen(),
+    FinancialNewsScreen(),
+  ];
+
+  void _onSignOut() async {
+    await _authService.logOut();
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => LoginScreen()),
+      (route) => false,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('StockWatch'),
+        title: Text(
+          'SmartTrade',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+        ),
         centerTitle: true,
+        backgroundColor: Colors.teal[800],
         actions: [
           IconButton(
             icon: Icon(Icons.logout),
-            onPressed: () async {
-              // Log out and navigate to LoginScreen
-              await _authService.logOut();
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => LoginScreen()),
-                (route) => false,
-              );
-            },
+            onPressed: _onSignOut,
           ),
         ],
       ),
-      body: GridView(
-        padding: EdgeInsets.all(20),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 20,
-          mainAxisSpacing: 20,
-        ),
-        children: [
-          HomeButton(
-            title: 'Stock Watchlist',
-            icon: Icons.list_alt,
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => StockWatchlistScreen()),
-            ),
+      body: _screens[_currentIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        backgroundColor: Colors.teal[800],
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.teal[200],
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list_alt),
+            label: 'Watchlist',
           ),
-          HomeButton(
-            title: 'Stock Data',
-            icon: Icons.bar_chart,
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => StockDataScreen()),
-            ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.bar_chart),
+            label: 'Stocks',
           ),
-          HomeButton(
-            title: 'Financial News',
-            icon: Icons.newspaper,
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => FinancialNewsScreen()),
-            ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.newspaper),
+            label: 'News',
           ),
         ],
-      ),
-    );
-  }
-}
-
-class HomeButton extends StatelessWidget {
-  final String title;
-  final IconData icon;
-  final VoidCallback onTap;
-
-  HomeButton({required this.title, required this.icon, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: Colors.blue,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 50, color: Colors.white),
-            SizedBox(height: 10),
-            Text(
-              title,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

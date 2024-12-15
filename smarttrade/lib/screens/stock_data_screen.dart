@@ -18,16 +18,16 @@ class _StockDataScreenState extends State<StockDataScreen> {
   String _symbol = 'AAPL'; // Default symbol
 
   final List<String> _stockSymbols = [
-    'AAPL',  // Apple
-    'AMZN',  // Amazon
-    'MSFT',  // Microsoft
+    'AAPL', // Apple
+    'AMZN', // Amazon
+    'MSFT', // Microsoft
     'GOOGL', // Google
-    'META',  // Meta (Facebook)
-    'TSLA',  // Tesla
-    'NVDA',  // NVIDIA
-    'AMD',   // AMD
-    'NFLX',  // Netflix
-    'UBER'   // Uber
+    'META', // Meta (Facebook)
+    'TSLA', // Tesla
+    'NVDA', // NVIDIA
+    'AMD', // AMD
+    'NFLX', // Netflix
+    'UBER' // Uber
   ];
 
   Map<String, List<Candle>> _allStockCandles = {};
@@ -46,7 +46,8 @@ class _StockDataScreenState extends State<StockDataScreen> {
       for (String symbol in _stockSymbols) {
         try {
           final stock = await _stockService.getStockQuote(symbol);
-          final candles = await _stockService.getStockCandles(symbol, 'D', 0, 0);
+          final candles =
+              await _stockService.getStockCandles(symbol, 'D', 0, 0);
           setState(() {
             _allStocks[symbol] = stock;
             _allStockCandles[symbol] = candles;
@@ -68,10 +69,10 @@ class _StockDataScreenState extends State<StockDataScreen> {
     try {
       final stock = await _stockService.getStockQuote(_symbol);
       final candles = await _stockService.getStockCandles(_symbol, 'D', 0, 0);
-      
+
       print('Loaded ${candles.length} candles for $_symbol'); // Debug print
       print('First candle: ${candles.firstOrNull}'); // Debug print
-      
+
       setState(() {
         _stock = stock;
         _candleData = candles;
@@ -106,8 +107,8 @@ class _StockDataScreenState extends State<StockDataScreen> {
                 );
               }).toList(),
               isCurved: true,
-              color: candles.first.close < candles.last.close 
-                  ? Colors.green 
+              color: candles.first.close < candles.last.close
+                  ? Colors.green
                   : Colors.red,
               dotData: FlDotData(show: false),
               belowBarData: BarAreaData(show: false),
@@ -121,7 +122,7 @@ class _StockDataScreenState extends State<StockDataScreen> {
   // Modify the sidebar list item
   Widget _buildStockListItem(String symbol) {
     final stock = _allStocks[symbol];
-    
+
     return InkWell(
       onTap: () {
         setState(() {
@@ -133,7 +134,7 @@ class _StockDataScreenState extends State<StockDataScreen> {
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
         decoration: BoxDecoration(
-          color: _symbol == symbol 
+          color: _symbol == symbol
               ? Theme.of(context).primaryColor.withOpacity(0.1)
               : null,
           border: Border(
@@ -149,14 +150,15 @@ class _StockDataScreenState extends State<StockDataScreen> {
                 Text(
                   symbol,
                   style: TextStyle(
-                    fontWeight: _symbol == symbol 
-                        ? FontWeight.bold 
-                        : FontWeight.normal,
+                    fontWeight:
+                        _symbol == symbol ? FontWeight.bold : FontWeight.normal,
                   ),
                 ),
                 if (stock != null) ...[
                   Icon(
-                    stock.percentChange >= 0 ? Icons.arrow_upward : Icons.arrow_downward,
+                    stock.percentChange >= 0
+                        ? Icons.arrow_upward
+                        : Icons.arrow_downward,
                     color: stock.percentChange >= 0 ? Colors.green : Colors.red,
                     size: 16,
                   ),
@@ -184,7 +186,7 @@ class _StockDataScreenState extends State<StockDataScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('StockWatch'),
+        title: Text('Stock List'),
         actions: [
           IconButton(
             icon: Icon(Icons.refresh),
@@ -202,7 +204,8 @@ class _StockDataScreenState extends State<StockDataScreen> {
             ),
             child: ListView.builder(
               itemCount: _stockSymbols.length,
-              itemBuilder: (context, index) => _buildStockListItem(_stockSymbols[index]),
+              itemBuilder: (context, index) =>
+                  _buildStockListItem(_stockSymbols[index]),
             ),
           ),
           // Main Content
@@ -388,7 +391,8 @@ class _StockDataScreenState extends State<StockDataScreen> {
             _buildDetailRow('Open', '\$${_stock!.open.toStringAsFixed(2)}'),
             _buildDetailRow('High', '\$${_stock!.high.toStringAsFixed(2)}'),
             _buildDetailRow('Low', '\$${_stock!.low.toStringAsFixed(2)}'),
-            _buildDetailRow('Previous Close', '\$${_stock!.previousClose.toStringAsFixed(2)}'),
+            _buildDetailRow('Previous Close',
+                '\$${_stock!.previousClose.toStringAsFixed(2)}'),
           ],
         ),
       ),

@@ -16,7 +16,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Sign Up')),
+      appBar: AppBar(
+        title: Text('Sign Up'),
+        backgroundColor: Colors.teal[800],
+      ),
+      backgroundColor: Colors.teal[50],
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -34,24 +38,48 @@ class _RegisterScreenState extends State<RegisterScreen> {
               SizedBox(height: 20),
               Text(
                 'Create Account',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.teal[800],
+                ),
               ),
               SizedBox(height: 30),
+              // Email Input
               TextField(
                 controller: emailController,
                 decoration: InputDecoration(
                   labelText: 'Email',
+                  labelStyle: TextStyle(color: Colors.teal[700]),
                   border: OutlineInputBorder(),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.teal[800]!),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.teal[700]!),
+                  ),
                 ),
+                style: TextStyle(
+                    color: Colors.black), // Input text color set to black
               ),
               SizedBox(height: 20),
+              // Password Input
               TextField(
                 controller: passwordController,
                 decoration: InputDecoration(
                   labelText: 'Password',
+                  labelStyle: TextStyle(color: Colors.teal[700]),
                   border: OutlineInputBorder(),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.teal[800]!),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.teal[700]!),
+                  ),
                 ),
                 obscureText: true,
+                style: TextStyle(
+                    color: Colors.black), // Input text color set to black
               ),
               SizedBox(height: 20),
               ElevatedButton(
@@ -63,12 +91,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     : Text('Sign Up'),
                 style: ElevatedButton.styleFrom(
                   minimumSize: Size(double.infinity, 50),
+                  backgroundColor: Colors.teal[700],
                 ),
               ),
               SizedBox(height: 10),
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: Text('Already have an account? Log In'),
+                child: Text(
+                  'Already have an account? Log In',
+                  style: TextStyle(color: Colors.teal[600]),
+                ),
               ),
             ],
           ),
@@ -85,7 +117,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     try {
       final email = emailController.text.trim();
       final password = passwordController.text.trim();
-      
+
       if (email.isEmpty || password.isEmpty) {
         throw FirebaseAuthException(
           code: 'invalid-input',
@@ -94,7 +126,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       }
 
       await _authService.signUp(email, password);
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Account created successfully!')),
@@ -103,7 +135,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       }
     } on FirebaseAuthException catch (e) {
       String errorMessage = 'Sign-up failed';
-      
+
       switch (e.code) {
         case 'weak-password':
           errorMessage = 'The password provided is too weak';
@@ -117,7 +149,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         default:
           errorMessage = e.message ?? 'An unknown error occurred';
       }
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(errorMessage)),

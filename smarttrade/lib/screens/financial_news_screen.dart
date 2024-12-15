@@ -40,6 +40,7 @@ class _FinancialNewsScreenState extends State<FinancialNewsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Financial News'),
+        backgroundColor: Colors.teal[800],
         actions: [
           IconButton(
             icon: Icon(Icons.refresh),
@@ -47,10 +48,16 @@ class _FinancialNewsScreenState extends State<FinancialNewsScreen> {
           ),
         ],
       ),
+      backgroundColor: Colors.teal[50],
       body: _isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator(color: Colors.teal[800]))
           : _news == null || _news!.isEmpty
-              ? Center(child: Text('No news available'))
+              ? Center(
+                  child: Text(
+                    'No news available',
+                    style: TextStyle(color: Colors.teal[800]),
+                  ),
+                )
               : RefreshIndicator(
                   onRefresh: _loadNews,
                   child: ListView.builder(
