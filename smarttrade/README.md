@@ -2,15 +2,11 @@
 
 A new Flutter project.
 
-## Getting Started
+Project Team:
+Madhu Sudhan Reddy Konda - 00284774
+Sri Haneesha Davuluri - 002804845
 
-This project is a starting point for a Flutter application.
+Youtube Video Link:
 
-A few resources to get you started if this is your first Flutter project:
+https://youtu.be/TpRuYVkDqAU?si=IrO0b64PyNQCRk0G
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
